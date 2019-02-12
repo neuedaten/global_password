@@ -1,0 +1,36 @@
+<f:layout name="Default" />
+
+<f:section name="main">
+    <f:if condition="{texts.htmlAbove}">
+        <div class="text-above">
+            <f:format.raw>{texts.htmlAbove}</f:format.raw>
+        </div>
+    </f:if>
+
+    <form action="" method="post">
+        <f:if condition="{wrongPassword}">
+            <div class="status-wrong-password">{texts.wrongPassword}</div>
+        </f:if>
+
+        <input type="hidden" name="global-password-submit" value="1"/>
+
+        <div class="form-field">
+            <input type="password" name="password" id="password" placeholder="{texts.passwordPlaceholder}" autofocus />
+        </div>
+
+        <div class="form-field checkbox-wrap">
+            <label for="stay">{texts.rememberMe}</label>
+            <input type="checkbox" name="stay" id="stay"/>
+        </div>
+
+        <div class="form-field">
+            <input type="submit" value="{texts.login}"/>
+        </div>
+    </form>
+
+    <f:if condition="{texts.htmlBelow}">
+        <div class="text-below">
+            <f:format.raw>{texts.htmlBelow}</f:format.raw>
+        </div>
+    </f:if>
+</f:section>

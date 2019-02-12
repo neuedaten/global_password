@@ -1,0 +1,119 @@
+* {
+  box-sizing: border-box;
+}
+
+html {
+  height: 100%;
+  font-family: sans-serif;
+}
+
+body {
+  display: flex;
+  height: 100%;
+  margin: 0;
+  justify-content: center;
+  align-items: center;
+  color: #666;
+  background: linear-gradient(to bottom, #f1f1f1 0%, #ffffff 100%);
+}
+body a {
+  color: #000;
+  text-decoration: none;
+}
+body a:hover {
+  text-decoration: underline;
+}
+body .global-password {
+  position: relative;
+  width: 90%;
+  max-width: 400px;
+  transition: opacity 200ms;
+}
+body .global-password h1 {
+  margin: 0 30px 20px 30px;
+  font-size: 24px;
+  font-weight: normal;
+  text-align: left;
+}
+body .global-password .welcome {
+  font-size: 16px;
+  line-height: 24px;
+  margin: 20px 30px;
+}
+body .global-password form {
+  padding: 30px;
+  box-shadow: rgba(0, 0, 0, 0.2) 0 0 40px;
+  background: #fff;
+  border-radius: 5px;
+  color: #666;
+  transition: box-shadow 500ms;
+}
+body .global-password form:focus-within {
+  box-shadow: rgba(0, 0, 0, 0.2) 0 0 100px;
+}
+body .global-password form .status-wrong-password {
+  margin: 0 0 20px 0;
+  color: darkred;
+}
+body .global-password form #password {
+  width: 100%;
+  padding: 15px;
+  margin-bottom: 15px;
+  font-size: 18px;
+  border: solid 2px #d1d1d1;
+  border-radius: 5px;
+  background: #f0f0f0;
+}
+body .global-password form #password:focus {
+  outline: none;
+  border-color: #d1d1d1;
+}
+body .global-password form .checkbox-wrap label {
+  font-size: 14px;
+}
+body .global-password form input[type=submit] {
+  position: relative;
+  margin-top: 20px;
+  width: 100%;
+  padding: 10px;
+  border: solid 2px #666;
+  border-radius: 5px;
+  font-size: 16px;
+  background: #fff;
+  color: #000;
+  transition: background 300ms;
+}
+body .global-password form input[type=submit]:hover {
+  border-color: #000;
+}
+body .global-password .advice {
+  margin: 20px 30px;
+  font-size: 16px;
+  line-height: 24px;
+}
+body .global-password .service-navigation {
+  margin: 20px 30px;
+  font-size: 14px;
+}
+body .global-password .service-navigation ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+body .global-password .service-navigation ul li {
+  display: inline-block;
+  margin-right: 20px;
+}
+body .global-password .text-above {
+  padding: 30px;
+  font-size: 14px;
+  line-height: 18px;
+}
+body .global-password .text-below {
+  padding: 30px;
+  color: #666;
+  font-size: 14px;
+  line-height: 18px;
+}
+
+/*# sourceMappingURL=main.css.map */

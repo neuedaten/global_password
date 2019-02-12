@@ -1,0 +1,20 @@
+{
+	"name": "neuedaten/global-password",
+	"type": "typo3-cms-extension",
+	"description": "Global TYPO3 password protection.",
+	"homepage": "https://www.neuedaten.de",
+	"license": ["GPL-2.0-or-later"],
+	"authors": [{
+		"name": "Bastian Schwabe",
+		"email": "bas@neuedaten.de",
+		"role": "Developer"
+	}],
+	"config": {
+		"sort-packages": true
+	},
+	"autoload": {
+		"psr-4": {
+			"Neuedaten\\GlobalPassword\\": "Classes/"
+		}
+	}
+}
