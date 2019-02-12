@@ -1,4 +1,4 @@
-# TYPO3
+# TYPO3 global password
 
 Login form to protect a complete TYPO3 System from unauthorized visitors. Useful for development and staging servers.
 
