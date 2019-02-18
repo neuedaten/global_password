@@ -1,6 +1,6 @@
 # TYPO3 global password
 
-Login form to protect a complete TYPO3 System from unauthorized visitors. Useful for development and staging servers.
+Password protection for a complete TYPO3 frontend. Useful for development and staging servers.
 
 ## .env
 
