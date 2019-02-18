@@ -1,7 +1,7 @@
 {
 	"name": "neuedaten/global-password",
 	"type": "typo3-cms-extension",
-	"description": "Global TYPO3 password protection.",
+	"description": "Global TYPO3 frontend password protection",
 	"homepage": "https://www.neuedaten.de",
 	"license": ["GPL-2.0-or-later"],
 	"authors": [{
