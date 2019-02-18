@@ -26,8 +26,8 @@ class CheckPassword implements MiddlewareInterface
             'title' => 'Login',
             'htmlAbove' => '',
             'htmlBelow' => '',
-            'passwordPlaceholder' => 'Passwort',
-            'rememberMe' => 'angemeldet bleiben',
+            'passwordPlaceholder' => 'Password',
+            'rememberMe' => 'remember me',
             'login' => 'Login'
         ]
     ];
