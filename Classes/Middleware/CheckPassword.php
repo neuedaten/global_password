@@ -34,16 +34,20 @@ class CheckPassword implements MiddlewareInterface
 
     protected $objectManager = null;
 
+
+    private function responseToMiddleware(ServerRequestInterface & $request, RequestHandlerInterface & $handler) {
+        /** @var \Psr\Http\Message\ResponseInterface $response */
+        $response = $handler->handle($request);
+        return $response;
+    }
+
     public function process(
         ServerRequestInterface $request,
         RequestHandlerInterface $handler
     ): ResponseInterface {
 
-        /** @var \TYPO3\CMS\Core\Http\Response  $response */
-        $response = $handler->handle($request);
-
         if (!array_key_exists(self::ENV_PASSWORD_FIELD, $_ENV)) {
-            return $response;
+            return $this->responseToMiddleware($request, $handler);
         }
 
         /** @var \TYPO3\CMS\Extbase\Object\ObjectManager; objectManager */
@@ -54,13 +58,13 @@ class CheckPassword implements MiddlewareInterface
         $configPassword = $_ENV[self::ENV_PASSWORD_FIELD];
 
         $templateVariables = [];
-
-        if (GeneralUtility::_POST('global-password-submit')) {
-            $formPassword = GeneralUtility::_GP('password');
+        
+        if ($request->getParsedBody()['global-password-submit']) {
+            $formPassword = $request->getParsedBody()['password'] ?? '';
             if ($formPassword == $configPassword) {
-                $stay = GeneralUtility::_GP('stay') ? true : false;
+                $stay = $request->getParsedBody()['password'] ? true : false;
                 $this->setPasswordToCookie(hash('sha256', $configPassword), $stay);
-                return $response;
+                return $this->responseToMiddleware($request, $handler);
             } else {
                 $templateVariables['wrongPassword'] = true;
             }
@@ -69,14 +73,16 @@ class CheckPassword implements MiddlewareInterface
         $cookiePassword = $this->getPasswordFromCookie();
 
         if (isset($cookiePassword) && $cookiePassword == hash('sha256', $configPassword)) {
-            return $response;
+            return $this->responseToMiddleware($request, $handler);
         }
 
         $templateVariables['texts'] = $this->config['texts'];
 
         /** @var \TYPO3\CMS\Fluid\View\StandaloneView $view */
         $view = $this->initializeStandaloneView($templateVariables);
-        die($view->render());
+//        die($view->render());
+
+        return new \TYPO3\CMS\Core\Http\HtmlResponse($view->render());
     }
 
     /**
