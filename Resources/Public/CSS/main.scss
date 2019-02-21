@@ -1,20 +1,21 @@
 * {
   box-sizing: border-box;
+  font-family: Helvetica, sans-serif;
 }
 
 html {
   height: 100%;
-  font-family: sans-serif;
+  font-family: Helvetica, sans-serif;
+  background: #f1f1f1;
 }
 
 body {
   display: flex;
-  height: 100%;
+  min-height: 100%;
   margin: 0;
   justify-content: center;
   align-items: center;
   color: #666;
-  background: linear-gradient(to bottom, #f1f1f1 0%,#ffffff 100%);
 
   a {
     color: #000;
@@ -29,7 +30,6 @@ body {
     position: relative;
     width: 90%;
     max-width: 400px;
-    //opacity: 0;
     transition: opacity 200ms;
 
     h1 {
@@ -78,7 +78,6 @@ body {
         }
       }
 
-
       .checkbox-wrap {
         label {
           font-size: 14px;
@@ -96,6 +95,8 @@ body {
         background: #fff;
         color: #000;
         transition: background 300ms;
+        -webkit-appearance: none;
+        -webkit-border-radius: 0;
 
         &:hover {
           border-color: #000;
