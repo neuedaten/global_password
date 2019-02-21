@@ -1,5 +1,6 @@
 <?php
-declare(strict_types = 1);
+declare(strict_types=1);
+
 namespace Neuedaten\GlobalPassword\Middleware;
 
 use Psr\Http\Message\ResponseInterface;
@@ -17,25 +18,29 @@ class CheckPassword implements MiddlewareInterface
     const ENV_PASSWORD_FIELD = 'TYPO3__GLOBAL_PASSWORD';
     const ENV_CONFIG_FIELD = 'TYPO3__GLOBAL_PASSWORD_CONFIG_FILE';
 
-    protected $config = [
-        'templatePathAndFilename' => 'EXT:global_password/Resources/Private/Templates/Password/Login.html',
-        'templateRootPaths' => [0 => 'EXT:global_password/Resources/Private/Templates/'],
-        'partialRootPaths' => [0 => 'EXT:global_password/Resources/Private/Partials/'],
-        'layoutRootPaths' => [0 => 'EXT:global_password/Resources/Private/Layouts/'],
-        'texts' => [
-            'title' => 'Login',
-            'htmlAbove' => '',
-            'htmlBelow' => '',
-            'passwordPlaceholder' => 'Password',
-            'rememberMe' => 'remember me',
-            'login' => 'Login'
-        ]
-    ];
+    protected $config
+        = [
+            'templatePathAndFilename' => 'EXT:global_password/Resources/Private/Templates/Password/Login.html',
+            'templateRootPaths' => [0 => 'EXT:global_password/Resources/Private/Templates/'],
+            'partialRootPaths' => [0 => 'EXT:global_password/Resources/Private/Partials/'],
+            'layoutRootPaths' => [0 => 'EXT:global_password/Resources/Private/Layouts/'],
+            'texts' => [
+                'title' => 'Login',
+                'htmlAbove' => '',
+                'htmlBelow' => '',
+                'passwordPlaceholder' => 'Password',
+                'rememberMe' => 'remember me',
+                'login' => 'Login'
+            ]
+        ];
 
     protected $objectManager = null;
 
 
-    private function responseToMiddleware(ServerRequestInterface & $request, RequestHandlerInterface & $handler) {
+    private function responseToMiddleware(
+        ServerRequestInterface & $request,
+        RequestHandlerInterface & $handler
+    ) {
         /** @var \Psr\Http\Message\ResponseInterface $response */
         $response = $handler->handle($request);
         return $response;
@@ -46,33 +51,50 @@ class CheckPassword implements MiddlewareInterface
         RequestHandlerInterface $handler
     ): ResponseInterface {
 
+        /** Skip if no password defined */
+        if (!array_key_exists(self::ENV_PASSWORD_FIELD, $_ENV)) {
+            return $this->responseToMiddleware($request, $handler);
+        }
+
+        /** Logout: */
+        if (key_exists('global-password-logout', $request->getQueryParams())
+            && $request->getQueryParams()['global-password-logout'] == '1'
+        ) {
+            $this->removePasswordCookie();
+            return new \TYPO3\CMS\Core\Http\RedirectResponse('/');
+        }
+
         if (!array_key_exists(self::ENV_PASSWORD_FIELD, $_ENV)) {
             return $this->responseToMiddleware($request, $handler);
         }
 
         /** @var \TYPO3\CMS\Extbase\Object\ObjectManager; objectManager */
-        $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+        $this->objectManager
+            = GeneralUtility::makeInstance(ObjectManager::class);
 
         $this->readConfigFile();
-        
+
         $configPassword = $_ENV[self::ENV_PASSWORD_FIELD];
 
         $templateVariables = [];
-        
+
         if ($request->getParsedBody()['global-password-submit']) {
             $formPassword = $request->getParsedBody()['password'] ?? '';
             if ($formPassword == $configPassword) {
                 $stay = $request->getParsedBody()['password'] ? true : false;
-                $this->setPasswordToCookie(hash('sha256', $configPassword), $stay);
+                $this->setPasswordToCookie(hash('sha256', $configPassword),
+                    $stay);
                 return $this->responseToMiddleware($request, $handler);
             } else {
                 $templateVariables['wrongPassword'] = true;
             }
         }
-        
+
         $cookiePassword = $this->getPasswordFromCookie();
 
-        if (isset($cookiePassword) && $cookiePassword == hash('sha256', $configPassword)) {
+        if (isset($cookiePassword)
+            && $cookiePassword == hash('sha256', $configPassword)
+        ) {
             return $this->responseToMiddleware($request, $handler);
         }
 
@@ -90,8 +112,8 @@ class CheckPassword implements MiddlewareInterface
      *
      * @return StandaloneView
      */
-    protected function initializeStandaloneView(Array $variables = null): StandaloneView
-    {
+    protected function initializeStandaloneView(Array $variables = null
+    ): StandaloneView {
         /** @var \TYPO3\CMS\Fluid\View\StandaloneView $standaloneView */
         $standaloneView = $this->objectManager->get(StandaloneView::class);
         $standaloneView->setFormat('html');
@@ -101,7 +123,9 @@ class CheckPassword implements MiddlewareInterface
         $renderingContext->setControllerAction('Login');
         $standaloneView->setRenderingContext($renderingContext);
 
-        if (isset($this->config['layoutRootPaths']) && is_array($this->config['layoutRootPaths'])) {
+        if (isset($this->config['layoutRootPaths'])
+            && is_array($this->config['layoutRootPaths'])
+        ) {
             $standaloneView->setLayoutRootPaths($this->config['layoutRootPaths']);
         }
 
@@ -109,11 +133,15 @@ class CheckPassword implements MiddlewareInterface
             $standaloneView->setTemplatePathAndFilename($this->config['templatePathAndFilename']);
         }
 
-        if (isset($this->config['templateRootPaths']) && is_array($this->config['templateRootPaths'])) {
+        if (isset($this->config['templateRootPaths'])
+            && is_array($this->config['templateRootPaths'])
+        ) {
             $standaloneView->setTemplateRootPaths($this->config['templateRootPaths']);
         }
 
-        if (isset($this->config['partialRootPaths']) && is_array($this->config['partialRootPaths'])) {
+        if (isset($this->config['partialRootPaths'])
+            && is_array($this->config['partialRootPaths'])
+        ) {
             $standaloneView->setPartialRootPaths($this->config['partialRootPaths']);
         }
 
@@ -127,28 +155,44 @@ class CheckPassword implements MiddlewareInterface
     /**
      * @return mixed
      */
-    protected function getPasswordFromCookie() {
+    protected function getPasswordFromCookie()
+    {
         if (array_key_exists(self::COOKIE_NAME, $_COOKIE)) {
             return $_COOKIE[self::COOKIE_NAME];
         }
         return null;
     }
 
-    protected function setPasswordToCookie($password, $stay = false) {
+    protected function setPasswordToCookie($password, $stay = false)
+    {
         if ($stay == true) {
-            setcookie(self::COOKIE_NAME, $password, time() + 60 * 60 * 24 * 30, '/');
+            setcookie(self::COOKIE_NAME, $password, time() + 60 * 60 * 24 * 30,
+                '/');
         } else {
             setcookie(self::COOKIE_NAME, $password, null, '/');
         }
     }
 
-    protected function readConfigFile() {
-        if (!array_key_exists(self::ENV_CONFIG_FIELD, $_ENV)) return;
+    protected function removePasswordCookie()
+    {
+        if (isset($_COOKIE[self::COOKIE_NAME])) {
+            unset($_COOKIE[self::COOKIE_NAME]);
+            setcookie(self::COOKIE_NAME, '', time() - 3600, '/');
+        }
+    }
+
+    protected function readConfigFile()
+    {
+        if (!array_key_exists(self::ENV_CONFIG_FIELD, $_ENV)) {
+            return;
+        }
         $filename = $_ENV[self::ENV_CONFIG_FIELD];
         /** @var YamlFileLoader $yamlFileLoader */
         $yamlFileLoader = $this->objectManager->get(YamlFileLoader::class);
         /** @var array $yamlConfig */
-        $yamlConfig = $yamlFileLoader->load(\TYPO3\CMS\Core\Core\Environment::getConfigPath() . '/' . $filename);
+        $yamlConfig
+            = $yamlFileLoader->load(\TYPO3\CMS\Core\Core\Environment::getConfigPath()
+            . '/' . $filename);
         $this->config = array_replace_recursive($this->config, $yamlConfig);
     }
 
