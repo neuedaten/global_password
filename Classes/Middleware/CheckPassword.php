@@ -8,9 +8,12 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use TYPO3\CMS\Core\Configuration\Loader\YamlFileLoader;
+use TYPO3\CMS\Core\Core\Environment;
+use TYPO3\CMS\Core\Http\HtmlResponse;
+use TYPO3\CMS\Core\Http\RedirectResponse;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\CMS\Fluid\View\StandaloneView;
+use TYPO3Fluid\Fluid\View\TemplateView;
 
 class CheckPassword implements MiddlewareInterface
 {
@@ -36,10 +39,9 @@ class CheckPassword implements MiddlewareInterface
 
     protected $objectManager = null;
 
-
     private function responseToMiddleware(
-        ServerRequestInterface & $request,
-        RequestHandlerInterface & $handler
+        ServerRequestInterface &$request,
+        RequestHandlerInterface &$handler
     ) {
         /** @var \Psr\Http\Message\ResponseInterface $response */
         $response = $handler->handle($request);
@@ -61,7 +63,7 @@ class CheckPassword implements MiddlewareInterface
             && $request->getQueryParams()['global-password-logout'] == '1'
         ) {
             $this->removePasswordCookie();
-            return new \TYPO3\CMS\Core\Http\RedirectResponse('/');
+            return new RedirectResponse('/');
         }
 
         if (!array_key_exists(self::ENV_PASSWORD_FIELD, $_ENV)) {
@@ -100,56 +102,68 @@ class CheckPassword implements MiddlewareInterface
 
         $templateVariables['texts'] = $this->config['texts'];
 
-        /** @var \TYPO3\CMS\Fluid\View\StandaloneView $view */
+        /** @var \TYPO3\CMS\Fluid\View\TemplateView $view */
         $view = $this->initializeStandaloneView($templateVariables);
-//        die($view->render());
-
-        return new \TYPO3\CMS\Core\Http\HtmlResponse($view->render());
+        return new HtmlResponse($view->render());
     }
 
     /**
      * @param array|null $variables
      *
-     * @return StandaloneView
+     * @return \TYPO3Fluid\Fluid\View\TemplateView
      */
-    protected function initializeStandaloneView(Array $variables = null
-    ): StandaloneView {
-        /** @var \TYPO3\CMS\Fluid\View\StandaloneView $standaloneView */
-        $standaloneView = $this->objectManager->get(StandaloneView::class);
-        $standaloneView->setFormat('html');
+    protected function initializeStandaloneView(array $variables = null
+    ): TemplateView {
+        $view = new TemplateView();
+        $paths = $view->getTemplatePaths();
 
-        $renderingContext = $standaloneView->getRenderingContext();
-        $renderingContext->setControllerName('Password');
-        $renderingContext->setControllerAction('Login');
-        $standaloneView->setRenderingContext($renderingContext);
+        if (isset($this->config['templatePathAndFilename'])
+            && is_array($this->config['templatePathAndFilename'])
+        ) {
+            $templatePathAndFilename = str_replace('EXT:',
+                Environment::getExtensionsPath() . '/',
+                $this->config['templatePathAndFilename']);
+            $paths->setTemplatePathAndFilename($templatePathAndFilename);
+        }
 
         if (isset($this->config['layoutRootPaths'])
             && is_array($this->config['layoutRootPaths'])
         ) {
-            $standaloneView->setLayoutRootPaths($this->config['layoutRootPaths']);
-        }
-
-        if (isset($this->config['templatePathAndFilename'])) {
-            $standaloneView->setTemplatePathAndFilename($this->config['templatePathAndFilename']);
+            $layoutRootPaths = str_replace('EXT:',
+                Environment::getExtensionsPath() . '/',
+                $this->config['layoutRootPaths']);
+            $paths->setLayoutRootPaths($layoutRootPaths);
         }
 
         if (isset($this->config['templateRootPaths'])
             && is_array($this->config['templateRootPaths'])
         ) {
-            $standaloneView->setTemplateRootPaths($this->config['templateRootPaths']);
+            $templateRootPaths = str_replace('EXT:',
+                Environment::getExtensionsPath() . '/',
+                $this->config['templateRootPaths']);
+            $paths->setTemplateRootPaths($templateRootPaths);
         }
 
         if (isset($this->config['partialRootPaths'])
             && is_array($this->config['partialRootPaths'])
         ) {
-            $standaloneView->setPartialRootPaths($this->config['partialRootPaths']);
+            $partialRootPaths = str_replace('EXT:',
+                Environment::getExtensionsPath() . '/',
+                $this->config['partialRootPaths']);
+            $paths->setPartialRootPaths($partialRootPaths);
         }
+
+        $renderingContext = $view->getRenderingContext();
+        $renderingContext->setControllerName('Password');
+        $renderingContext->setControllerAction('Login');
+        $renderingContext->setTemplatePaths($paths);
+        $view->setRenderingContext($renderingContext);
 
         if (isset($variables)) {
-            $standaloneView->assignMultiple($variables);
+            $view->assignMultiple($variables);
         }
 
-        return $standaloneView;
+        return $view;
     }
 
     /**
@@ -191,10 +205,8 @@ class CheckPassword implements MiddlewareInterface
         $yamlFileLoader = $this->objectManager->get(YamlFileLoader::class);
         /** @var array $yamlConfig */
         $yamlConfig
-            = $yamlFileLoader->load(\TYPO3\CMS\Core\Core\Environment::getConfigPath()
+            = $yamlFileLoader->load(Environment::getConfigPath()
             . '/' . $filename);
         $this->config = array_replace_recursive($this->config, $yamlConfig);
     }
-
-
 }
