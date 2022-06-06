@@ -9,6 +9,7 @@ Password protection for a complete TYPO3 frontend. Useful for development and st
 `TYPO3__GLOBAL_PASSWORD="Password123!"`
 
 ### Config file name (optional):
+
 `TYPO3__GLOBAL_PASSWORD_CONFIG_FILE="global-password.yaml"`
 
 save config file to `config` directory
@@ -32,6 +33,15 @@ texts:
 
 add this get parameter to your url:
 ``?global-password-logout=1``
+
+## Site specific
+
+If you have a multi-site install you may wish to disable the password for a particular site. This can be done by adding the following to you site config file (e.g. `config/sites/XXX/config.yaml`)
+
+```yaml
+globalPassword:
+  enabled: false
+```
 
 Copyright (c) 2019 Bastian Schwabe <bas@neuedaten.de>
 

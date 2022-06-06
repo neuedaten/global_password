@@ -53,8 +53,20 @@ class CheckPassword implements MiddlewareInterface
         RequestHandlerInterface $handler
     ): ResponseInterface {
 
-        /** Skip if no password defined */
-        if (!array_key_exists(self::ENV_PASSWORD_FIELD, $_ENV)) {
+        $site = $request->getAttribute('site');
+        if(
+            /** If no password defined */
+            (!array_key_exists(self::ENV_PASSWORD_FIELD, $_ENV)) ||
+            /** Or if globalPassword is disabled in site config */
+            (
+                $site &&
+                isset(
+                    $site->getConfiguration()['globalPassword'],
+                    $site->getConfiguration()['globalPassword']['enabled'],
+                ) &&
+                $site->getConfiguration()['globalPassword']['enabled'] === false
+            )
+        ) {
             return $this->responseToMiddleware($request, $handler);
         }
 
@@ -64,10 +76,6 @@ class CheckPassword implements MiddlewareInterface
         ) {
             $this->removePasswordCookie();
             return new RedirectResponse('/');
-        }
-
-        if (!array_key_exists(self::ENV_PASSWORD_FIELD, $_ENV)) {
-            return $this->responseToMiddleware($request, $handler);
         }
 
         /** @var \TYPO3\CMS\Extbase\Object\ObjectManager; objectManager */
