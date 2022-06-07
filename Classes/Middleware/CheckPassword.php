@@ -60,6 +60,7 @@ class CheckPassword implements MiddlewareInterface
             /** Or if globalPassword is disabled in site config */
             (
                 $site &&
+                method_exists($site, 'getConfiguration') &&
                 isset(
                     $site->getConfiguration()['globalPassword'],
                     $site->getConfiguration()['globalPassword']['enabled'],
