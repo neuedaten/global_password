@@ -36,7 +36,7 @@ class GlobalPasswordConfiguration implements SingletonInterface
             }
 
             // Merge the conditional config and global config
-            $this->config = $this->applyEnvironmentConfiguration($config, $variants);
+            $this->config = $this->applyEnvironmentConfiguration($config, $variants ?? []);
         }
     }
 
@@ -73,7 +73,7 @@ class GlobalPasswordConfiguration implements SingletonInterface
      * @param array $config
      * @param array $variants
      */
-    protected function applyEnvironmentConfiguration(array $config, array $variants = [])
+    protected function applyEnvironmentConfiguration(array $config, array $variants)
     {
         if(count($variants)) {
             $expressionLanguageResolver = GeneralUtility::makeInstance(
