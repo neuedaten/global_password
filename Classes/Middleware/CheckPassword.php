@@ -3,17 +3,18 @@ declare(strict_types=1);
 
 namespace Neuedaten\GlobalPassword\Middleware;
 
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Server\MiddlewareInterface;
-use Psr\Http\Server\RequestHandlerInterface;
-use TYPO3\CMS\Core\Configuration\Loader\YamlFileLoader;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Http\HtmlResponse;
+use Psr\Http\Message\ResponseInterface;
+use TYPO3Fluid\Fluid\View\TemplateView;
+use Psr\Http\Server\MiddlewareInterface;
 use TYPO3\CMS\Core\Http\RedirectResponse;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3Fluid\Fluid\View\TemplateView;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\RequestHandlerInterface;
+use TYPO3\CMS\Core\Configuration\Loader\YamlFileLoader;
+use Neuedaten\GlobalPassword\Entity\GlobalPasswordConfiguration;
 
 class CheckPassword implements MiddlewareInterface
 {
@@ -54,19 +55,11 @@ class CheckPassword implements MiddlewareInterface
     ): ResponseInterface {
 
         $site = $request->getAttribute('site');
+        $GlobalPasswordConfiguration = GeneralUtility::makeInstance(GlobalPasswordConfiguration::class, $site);
+
         if(
-            /** If no password defined */
             (!array_key_exists(self::ENV_PASSWORD_FIELD, $_ENV)) ||
-            /** Or if globalPassword is disabled in site config */
-            (
-                $site &&
-                method_exists($site, 'getConfiguration') &&
-                isset(
-                    $site->getConfiguration()['globalPassword'],
-                    $site->getConfiguration()['globalPassword']['enabled'],
-                ) &&
-                $site->getConfiguration()['globalPassword']['enabled'] === false
-            )
+            !$GlobalPasswordConfiguration->isPasswordProtected()
         ) {
             return $this->responseToMiddleware($request, $handler);
         }

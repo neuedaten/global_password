@@ -2,6 +2,8 @@
 
 Password protection for a complete TYPO3 frontend. Useful for development and staging servers.
 
+Set the password in your env file then configure if it is active or not via the site config
+
 ## .env
 
 ### Password:
@@ -14,11 +16,33 @@ Password protection for a complete TYPO3 frontend. Useful for development and st
 
 save config file to `config` directory
 
+## Site Configuration YAML
+
+To activate the password for that site on all environments **where the password is present** then add:
+
+```yaml
+globalPassword:
+  enabled: true
+```
+
+If you wish to disable/enable the password for a specific environment, you can do this with:
+
+```yaml
+globalPassword:
+  enabled: false
+  variants:
+    -
+      enabled: true
+      condition: 'applicationContext == "Production/Staging"'
+```
+
+Where `condition` is the same as the `baseVariants` conditions of the domain names
+
 ## Config file
 
 e.g. `config/global-password.yaml`
 
-```
+```yaml
 texts:
      title: "Page title"
      htmlAbove: "some text <b>above</b> the form"
