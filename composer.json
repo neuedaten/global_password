@@ -16,5 +16,9 @@
 		"psr-4": {
 			"Neuedaten\\GlobalPassword\\": "Classes/"
 		}
-	}
+	},
+	"require": {
+        "typo3/cms-core": "^9.5 || ^10.4 || ^11.5"
+    }
+
 }
