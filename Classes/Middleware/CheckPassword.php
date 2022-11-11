@@ -17,6 +17,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 use TYPO3\CMS\Frontend\Page\PageAccessFailureReasons;
 use TYPO3\CMS\Core\Configuration\Loader\YamlFileLoader;
 use Neuedaten\GlobalPassword\Entity\GlobalPasswordConfiguration;
+use TYPO3\CMS\Frontend\Controller\ErrorController;
 
 class CheckPassword implements MiddlewareInterface
 {
