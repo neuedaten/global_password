@@ -1,20 +1,32 @@
 {
-	"name": "neuedaten/global-password",
-	"type": "typo3-cms-extension",
-	"description": "Global TYPO3 frontend password protection",
-	"homepage": "https://www.neuedaten.de",
-	"license": ["GPL-2.0-or-later"],
-	"authors": [{
-		"name": "Bastian Schwabe",
-		"email": "bas@neuedaten.de",
-		"role": "Developer"
-	}],
-	"config": {
-		"sort-packages": true
-	},
-	"autoload": {
-		"psr-4": {
-			"Neuedaten\\GlobalPassword\\": "Classes/"
-		}
-	}
+    "name": "neuedaten/global-password",
+    "description": "Global TYPO3 frontend password protection",
+    "type": "typo3-cms-extension",
+    "authors": [
+        {
+            "name": "Bastian Schwabe",
+            "email": "bas@neuedaten.de",
+            "role": "Developer"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Neuedaten\\GlobalPassword\\": "Classes/"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "extra": {
+        "typo3/cms": {
+            "extension-key": "global_password"
+        }
+    },
+    "homepage": "https://www.neuedaten.de",
+    "license": [
+        "GPL-2.0-or-later"
+    ],
+    "require": {
+        "typo3/cms-core": "^9.5 || ^10.4 || ^11.5"
+    }
 }

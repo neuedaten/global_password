@@ -3,17 +3,21 @@ declare(strict_types=1);
 
 namespace Neuedaten\GlobalPassword\Middleware;
 
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Server\MiddlewareInterface;
-use Psr\Http\Server\RequestHandlerInterface;
-use TYPO3\CMS\Core\Configuration\Loader\YamlFileLoader;
 use TYPO3\CMS\Core\Core\Environment;
+use TYPO3\CMS\Core\Site\Entity\Site;
 use TYPO3\CMS\Core\Http\HtmlResponse;
+use Psr\Http\Message\ResponseInterface;
+use TYPO3Fluid\Fluid\View\TemplateView;
+use Psr\Http\Server\MiddlewareInterface;
 use TYPO3\CMS\Core\Http\RedirectResponse;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3Fluid\Fluid\View\TemplateView;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\RequestHandlerInterface;
+use TYPO3\CMS\Frontend\Page\PageAccessFailureReasons;
+use TYPO3\CMS\Core\Configuration\Loader\YamlFileLoader;
+use Neuedaten\GlobalPassword\Entity\GlobalPasswordConfiguration;
+use TYPO3\CMS\Frontend\Controller\ErrorController;
 
 class CheckPassword implements MiddlewareInterface
 {
@@ -53,8 +57,22 @@ class CheckPassword implements MiddlewareInterface
         RequestHandlerInterface $handler
     ): ResponseInterface {
 
-        /** Skip if no password defined */
-        if (!array_key_exists(self::ENV_PASSWORD_FIELD, $_ENV)) {
+        $site = $request->getAttribute('site');
+
+        if (!$site instanceof Site) {
+            return GeneralUtility::makeInstance(ErrorController::class)->pageNotFoundAction(
+                $request,
+                'No site configuration found.',
+                ['code' => PageAccessFailureReasons::PAGE_NOT_FOUND]
+            );
+        }
+
+        $globalPasswordConfiguration = GeneralUtility::makeInstance(GlobalPasswordConfiguration::class, $site);
+
+        if(
+            (!array_key_exists(self::ENV_PASSWORD_FIELD, $_ENV)) ||
+            !$globalPasswordConfiguration->isPasswordProtected()
+        ) {
             return $this->responseToMiddleware($request, $handler);
         }
 
@@ -64,10 +82,6 @@ class CheckPassword implements MiddlewareInterface
         ) {
             $this->removePasswordCookie();
             return new RedirectResponse('/');
-        }
-
-        if (!array_key_exists(self::ENV_PASSWORD_FIELD, $_ENV)) {
-            return $this->responseToMiddleware($request, $handler);
         }
 
         /** @var \TYPO3\CMS\Extbase\Object\ObjectManager; objectManager */
