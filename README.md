@@ -4,21 +4,21 @@ Password protection for a complete TYPO3 frontend. Useful for development and st
 
 Set the password in your env file then configure if it is active or not via the site config
 
+1. Add the password to the `.env` file
+2. Add the configuration to `config/sites/*/config,yaml`
+3. Customise the login screen if desired
+
+The password needs to be both present in your `.env` and activated in the `config.yaml` to show
+
 ## .env
 
-### Password:
+Set the password with :
 
 `TYPO3__GLOBAL_PASSWORD="Password123!"`
 
-### Config file name (optional):
-
-`TYPO3__GLOBAL_PASSWORD_CONFIG_FILE="global-password.yaml"`
-
-save config file to `config` directory
-
 ## Site Configuration YAML
 
-To activate the password for that site on all environments **where the password is present** then add:
+To activate the password for that site on all environments **where the password is in the `.env` file** then add:
 
 ```yaml
 globalPassword:
@@ -36,36 +36,35 @@ globalPassword:
       condition: 'applicationContext == "Production/Staging"'
 ```
 
-Where `condition` is the same as the `baseVariants` conditions of the domain names
+Where `condition` is the same as the `baseVariants` conditions of the domain names.
+
+Don't forget to enable this **for each** `config.yaml` in your install. 
 
 ## Config file
 
+If you wish to configure the password login screen, you can do so by creating a `config/global-password.yaml` file and specifying the following in your `.env` file
+
+`TYPO3__GLOBAL_PASSWORD_CONFIG_FILE="global-password.yaml"`
+
 e.g. `config/global-password.yaml`
+
+You can then override the following:
 
 ```yaml
 texts:
-     title: "Page title"
-     htmlAbove: "some text <b>above</b> the form"
-     htmlBelow: "some text <b>below</b> the form"
-     passwordPlaceholder: "Password"
-     rememberMe: "remember me"
-     login: Login
-     wrongPassword: "Please check your password"
+  title: "Page title"
+  htmlAbove: "some text <b>above</b> the form"
+  htmlBelow: "some text <b>below</b> the form"
+  passwordPlaceholder: "Password"
+  rememberMe: "remember me"
+  login: Login
+  wrongPassword: "Please check your password"
 ```
 
 ## Logout
 
 add this get parameter to your url:
 ``?global-password-logout=1``
-
-## Site specific
-
-If you have a multi-site install you may wish to disable the password for a particular site. This can be done by adding the following to you site config file (e.g. `config/sites/XXX/config.yaml`)
-
-```yaml
-globalPassword:
-  enabled: false
-```
 
 Copyright (c) 2019 Bastian Schwabe <bas@neuedaten.de>
 
