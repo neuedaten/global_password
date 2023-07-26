@@ -5,7 +5,7 @@ Password protection for a complete TYPO3 frontend. Useful for development and st
 Set the password in your env file then configure if it is active or not via the site config
 
 1. Add the password to the `.env` file
-2. Add the configuration to `config/sites/*/config,yaml`
+2. Add the configuration to `config/sites/*/config.yaml`
 3. Customise the login screen if desired
 
 The password needs to be both present in your `.env` and activated in the `config.yaml` to show
