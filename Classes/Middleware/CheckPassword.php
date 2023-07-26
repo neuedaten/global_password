@@ -94,7 +94,7 @@ class CheckPassword implements MiddlewareInterface
 
         $templateVariables = [];
 
-        if ($request->getParsedBody()['global-password-submit']) {
+        if (is_array($request->getParsedBody()) && isset($request->getParsedBody()['global-password-submit'])) {
             $formPassword = $request->getParsedBody()['password'] ?? '';
             if ($formPassword == $configPassword) {
                 $stay = $request->getParsedBody()['password'] ? true : false;
