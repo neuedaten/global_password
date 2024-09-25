@@ -7,6 +7,7 @@ use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Site\Entity\Site;
 use TYPO3\CMS\Core\Http\HtmlResponse;
 use Psr\Http\Message\ResponseInterface;
+use TYPO3\CMS\Core\Utility\PathUtility;
 use TYPO3Fluid\Fluid\View\TemplateView;
 use Psr\Http\Server\MiddlewareInterface;
 use TYPO3\CMS\Core\Http\RedirectResponse;
@@ -14,10 +15,10 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use TYPO3\CMS\Frontend\Controller\ErrorController;
 use TYPO3\CMS\Frontend\Page\PageAccessFailureReasons;
 use TYPO3\CMS\Core\Configuration\Loader\YamlFileLoader;
 use Neuedaten\GlobalPassword\Entity\GlobalPasswordConfiguration;
-use TYPO3\CMS\Frontend\Controller\ErrorController;
 
 class CheckPassword implements MiddlewareInterface
 {
@@ -31,6 +32,7 @@ class CheckPassword implements MiddlewareInterface
             'templateRootPaths' => [0 => 'EXT:global_password/Resources/Private/Templates/'],
             'partialRootPaths' => [0 => 'EXT:global_password/Resources/Private/Partials/'],
             'layoutRootPaths' => [0 => 'EXT:global_password/Resources/Private/Layouts/'],
+            'cssPathAndFilename' => 'EXT:global_password/Resources/Public/CSS/main.css',
             'texts' => [
                 'title' => 'Login',
                 'htmlAbove' => '',
@@ -115,6 +117,9 @@ class CheckPassword implements MiddlewareInterface
         }
 
         $templateVariables['texts'] = $this->config['texts'];
+        $templateVariables['cssPathAndFilename'] = PathUtility::getAbsoluteWebPath(
+            GeneralUtility::getFileAbsFileName($this->config['cssPathAndFilename'])
+        );
 
         /** @var \TYPO3\CMS\Fluid\View\TemplateView $view */
         $view = $this->initializeStandaloneView($templateVariables);
@@ -132,39 +137,45 @@ class CheckPassword implements MiddlewareInterface
         $paths = $view->getTemplatePaths();
 
         if (isset($this->config['templatePathAndFilename'])
-            && is_array($this->config['templatePathAndFilename'])
         ) {
-            $templatePathAndFilename = str_replace('EXT:',
-                Environment::getExtensionsPath() . '/',
-                $this->config['templatePathAndFilename']);
+            $templatePathAndFilename = GeneralUtility::getFileAbsFileName($this->config['templatePathAndFilename']);
             $paths->setTemplatePathAndFilename($templatePathAndFilename);
         }
 
         if (isset($this->config['layoutRootPaths'])
             && is_array($this->config['layoutRootPaths'])
         ) {
-            $layoutRootPaths = str_replace('EXT:',
-                Environment::getExtensionsPath() . '/',
-                $this->config['layoutRootPaths']);
-            $paths->setLayoutRootPaths($layoutRootPaths);
+            array_walk(
+                $this->config['layoutRootPaths'],
+                function(&$path) {
+                    $path = GeneralUtility::getFileAbsFileName($path);
+                }
+            );
+            $paths->setLayoutRootPaths($this->config['layoutRootPaths']);
         }
 
         if (isset($this->config['templateRootPaths'])
             && is_array($this->config['templateRootPaths'])
         ) {
-            $templateRootPaths = str_replace('EXT:',
-                Environment::getExtensionsPath() . '/',
-                $this->config['templateRootPaths']);
-            $paths->setTemplateRootPaths($templateRootPaths);
+            array_walk(
+                $this->config['templateRootPaths'],
+                function (&$path) {
+                    $path = GeneralUtility::getFileAbsFileName($path);
+                }
+            );
+            $paths->setTemplateRootPaths($this->config['templateRootPaths']);
         }
 
         if (isset($this->config['partialRootPaths'])
             && is_array($this->config['partialRootPaths'])
         ) {
-            $partialRootPaths = str_replace('EXT:',
-                Environment::getExtensionsPath() . '/',
-                $this->config['partialRootPaths']);
-            $paths->setPartialRootPaths($partialRootPaths);
+            array_walk(
+                $this->config['partialRootPaths'],
+                function (&$path) {
+                    $path = GeneralUtility::getFileAbsFileName($path);
+                }
+            );
+            $paths->setPartialRootPaths($this->config['partialRootPaths']);
         }
 
         $renderingContext = $view->getRenderingContext();
