@@ -12,7 +12,6 @@ use TYPO3Fluid\Fluid\View\TemplateView;
 use Psr\Http\Server\MiddlewareInterface;
 use TYPO3\CMS\Core\Http\RedirectResponse;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use TYPO3\CMS\Frontend\Controller\ErrorController;
@@ -42,8 +41,6 @@ class CheckPassword implements MiddlewareInterface
                 'login' => 'Login'
             ]
         ];
-
-    protected $objectManager = null;
 
     private function responseToMiddleware(
         ServerRequestInterface &$request,
@@ -85,10 +82,6 @@ class CheckPassword implements MiddlewareInterface
             $this->removePasswordCookie();
             return new RedirectResponse('/');
         }
-
-        /** @var \TYPO3\CMS\Extbase\Object\ObjectManager; objectManager */
-        $this->objectManager
-            = GeneralUtility::makeInstance(ObjectManager::class);
 
         $this->readConfigFile();
 
@@ -227,7 +220,7 @@ class CheckPassword implements MiddlewareInterface
         }
         $filename = $_ENV[self::ENV_CONFIG_FIELD];
         /** @var YamlFileLoader $yamlFileLoader */
-        $yamlFileLoader = $this->objectManager->get(YamlFileLoader::class);
+        $yamlFileLoader = GeneralUtility::makeInstance(YamlFileLoader::class);
         /** @var array $yamlConfig */
         $yamlConfig
             = $yamlFileLoader->load(Environment::getConfigPath()
