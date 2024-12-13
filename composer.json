@@ -8,6 +8,11 @@
             "name": "Bastian Schwabe",
             "email": "bas@neuedaten.de",
             "role": "Developer"
+        },
+        {
+            "name": "Mike Street",
+            "email": "mike@liquidlight.co.uk",
+            "role": "Developer"
         }
     ],
     "autoload": {
