@@ -127,7 +127,7 @@ class CheckPassword implements MiddlewareInterface
     protected function initializeStandaloneView(array $variables = null
     ): TemplateView {
         $view = new TemplateView();
-        $paths = $view->getTemplatePaths();
+        $paths = $view->getRenderingContext()->getTemplatePaths();
 
         if (isset($this->config['templatePathAndFilename'])
         ) {
