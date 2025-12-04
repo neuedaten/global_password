@@ -2,7 +2,7 @@
     "name": "neuedaten/global-password",
     "description": "Global TYPO3 frontend password protection",
     "type": "typo3-cms-extension",
-    "version": "3.0.0",
+    "version": "4.0.0",
     "authors": [
         {
             "name": "Bastian Schwabe",
