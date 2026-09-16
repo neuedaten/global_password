@@ -124,7 +124,7 @@ class CheckPassword implements MiddlewareInterface
      *
      * @return \TYPO3Fluid\Fluid\View\TemplateView
      */
-    protected function initializeStandaloneView(array $variables = null
+    protected function initializeStandaloneView(?array $variables = null
     ): TemplateView {
         $view = new TemplateView();
         $paths = $view->getRenderingContext()->getTemplatePaths();
