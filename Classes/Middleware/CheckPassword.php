@@ -197,12 +197,13 @@ class CheckPassword implements MiddlewareInterface
 
     protected function setPasswordToCookie($password, $stay = false)
     {
-        if ($stay == true) {
-            setcookie(self::COOKIE_NAME, $password, time() + 60 * 60 * 24 * 30,
-                '/');
-        } else {
-            setcookie(self::COOKIE_NAME, $password, null, '/');
-        }
+        setcookie(self::COOKIE_NAME, $password, [
+            'expires' => $stay ? time() + 60 * 60 * 24 * 30 : 0,
+            'path' => '/',
+            'secure' => GeneralUtility::getIndpEnv('TYPO3_SSL'),
+            'httponly' => true,
+            'samesite' => 'Lax',
+        ]);
     }
 
     protected function removePasswordCookie()
