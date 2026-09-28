@@ -92,7 +92,7 @@ class CheckPassword implements MiddlewareInterface
         if (is_array($request->getParsedBody()) && isset($request->getParsedBody()['global-password-submit'])) {
             $formPassword = $request->getParsedBody()['password'] ?? '';
             if ($formPassword == $configPassword) {
-                $stay = $request->getParsedBody()['password'] ? true : false;
+                $stay = !empty($request->getParsedBody()['stay']);
                 $this->setPasswordToCookie(hash('sha256', $configPassword),
                     $stay);
                 return $this->responseToMiddleware($request, $handler);
