@@ -61,6 +61,14 @@ texts:
   wrongPassword: "Please check your password"
 ```
 
+## StaticFileCache
+
+If [EXT:staticfilecache](https://github.com/lochmueller/staticfilecache) is installed, pages are not cached while the password is active.
+
+Static files are served by the web server before TYPO3 runs, so without this a page viewed by someone who had entered the password would be shown to every visitor.
+
+Flush the StaticFileCache after installing this version, as any page cached before it will still be served.
+
 ## Logout
 
 add this get parameter to your url:
