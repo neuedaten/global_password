@@ -34,5 +34,8 @@
     ],
     "require": {
         "typo3/cms-core": "^12.4 || ^13.4 || ^14.3"
+    },
+    "suggest": {
+        "lochmueller/staticfilecache": "Pages are not static-cached while the password is active"
     }
 }
